@@ -104,7 +104,7 @@ class DatabaseHandler:
 			return balance
 		else:
 			self.log.write_line(f"Failed to collect account balance for '{account_id}'.")
-			raise ValueError("Failed")
+			raise ValueError(f"Failed to collect account balance for '{account_id}'")
 
 	def add_website_cookie(self, account_id: str, path: str):
 		self.cursor.execute(

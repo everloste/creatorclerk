@@ -39,7 +39,7 @@ def parse_system_arguments(args_, flags = None):
 			print("For your privacy the balance is not written to the log.")
 
 		else:
-			raise ValueError("Command cannot be recognized")
+			raise ValueError("Command isn't recognized")
 
 	except IndexError:
 		raise IndexError("Command is missing arguments")
