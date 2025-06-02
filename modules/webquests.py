@@ -114,9 +114,56 @@ def get_modrinth_dollar_balance(cookies: dict) -> float:
 
 	return result
 
-# Get Modrinth total download count
+
+# Gets user information from provided cookies
+# https://docs.modrinth.com/api/operations/getuserfromauth/
+def get_modrinth_user_info(cookies: dict):
+	response = requests.get(
+		url = "https://api.modrinth.com/v2/user",
+		cookies = cookies,
+		headers = {
+			"user-agent": RequestData.UserAgent,
+			"Authorization": cookies["auth-token"]
+		}
+	)
+	return response.json()
+
+
+# Gets all projects of a Modrinth user
+# https://docs.modrinth.com/api/operations/getuserprojects/
+def get_modrinth_user_projects(user: str):
+	response = requests.get(
+		url = f"https://api.modrinth.com/v2/user/{user}/projects",
+		headers = {
+			"user-agent": RequestData.UserAgent
+		}
+	)
+	return response.json()
+
+
+# Gets the download count of a project
+# https://docs.modrinth.com/api/operations/getproject/
+def get_modrinth_project_downloads(project: str) -> int:
+	response = requests.get(
+		url = f"https://api.modrinth.com/v2/project/{project}",
+		headers = {
+			"user-agent": RequestData.UserAgent
+		}
+	)
+	return response.json()["downloads"]
+
+
+# Gets the total download count of all Modrinth user's projects
 def get_modrinth_downloads_total(cookies: dict) -> int:
-	return 0
+	user_info = get_modrinth_user_info(cookies)
+	projects = get_modrinth_user_projects(user_info["id"])
+
+	count: int = 0
+	for project in projects:
+		count += get_modrinth_project_downloads(project["id"])
+
+	return count
+
 
 # Helper function to search the revenue page for the amount
 # Uses regex to search for the dollar amount
