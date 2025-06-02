@@ -48,8 +48,30 @@ def get_curseforge_dollar_balance(cookies: dict) -> float:
 def get_curseforge_downloads_total(cookies: dict) -> int:
 	return curseforge_api_get(cookies, "statistics/queries/downloadsTotal", ["queryResult", "data", 0, "total"])
 
+# Get points generated
+def get_curseforge_transactions(cookies: dict, range_start: int, range_end: int) -> list:
+	data = curseforge_api_get(cookies, f"transactions?filter=%7B%7D&range=%5B{range_start}%2C{range_end}%5D&sort=%5B%22DateCreated%22%2C%22DESC%22%5D", None)
+	output = list()
+	for trans in data:
+		ttype = "income" if (trans["type"] == 1) else 0
+		if (ttype == 0):
+			if (trans["type"] == 8):
+				ttype = "withdrawal"
+			elif (trans["type"] == 5):
+				continue
+			else:
+				ttype = "unknown"
+		output.append({
+			"change": trans["pointChange"] * 0.05 if (ttype != "withdrawal") else trans["pointChange"] * -0.05,
+			"date": trans["dateCreated"][:10],
+			"time": trans["dateCreated"][11:16],
+			"type": ttype
+		})
+	return output
+
+
 # Helper function for interacting with the CurseForge authors API
-def curseforge_api_get(cookies: dict, url: str, value_path: list) -> any:
+def curseforge_api_get(cookies: dict, url: str, value_path: list = None) -> any:
 	response = requests.get(
 		url = f"https://authors.curseforge.com/_api/{url}",
 		cookies = cookies,
@@ -65,8 +87,9 @@ def curseforge_api_get(cookies: dict, url: str, value_path: list) -> any:
 
 	try:
 		response_data = response.json()
-		for key in value_path:
-			response_data = response_data[key]
+		if value_path is not None:
+			for key in value_path:
+				response_data = response_data[key]
 		return response_data
 
 	except KeyError or ValueError:
@@ -90,6 +113,10 @@ def get_modrinth_dollar_balance(cookies: dict) -> float:
 		raise ConnectionError("The Modrinth webpage didn't contain balance values. Are your cookies valid?")
 
 	return result
+
+# Get Modrinth total download count
+def get_modrinth_downloads_total(cookies: dict) -> int:
+	return 0
 
 # Helper function to search the revenue page for the amount
 # Uses regex to search for the dollar amount

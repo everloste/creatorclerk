@@ -57,7 +57,7 @@ if __name__ == '__main__':
 				try:
 					parse_system_arguments(args, flags)
 				except:
-					app.log.write_line(f"Failed to execute command:\n\tArguments: {raw_args}\n\tError: {sys.exc_info()[1]}")
+					app.log.write_line(f"Failed to execute command:\n\tArguments: {raw_args}\n\tError: {sys.exc_info()}")
 
 	if "wait" in flags:
 		input("Press any key to exit... ")
