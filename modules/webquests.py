@@ -117,7 +117,7 @@ def get_modrinth_dollar_balance(cookies: dict) -> float:
 
 # Gets user information from provided cookies
 # https://docs.modrinth.com/api/operations/getuserfromauth/
-def get_modrinth_user_info(cookies: dict):
+def get_modrinth_user_info(cookies: dict) -> dict:
 	response = requests.get(
 		url = "https://api.modrinth.com/v2/user",
 		cookies = cookies,
@@ -131,7 +131,7 @@ def get_modrinth_user_info(cookies: dict):
 
 # Gets all projects of a Modrinth user
 # https://docs.modrinth.com/api/operations/getuserprojects/
-def get_modrinth_user_projects(user: str):
+def get_modrinth_user_projects(user: str) -> list:
 	response = requests.get(
 		url = f"https://api.modrinth.com/v2/user/{user}/projects",
 		headers = {
